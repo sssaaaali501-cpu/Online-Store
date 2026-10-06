@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Tech & Style - Premium E-Commerce Platform</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            accent: '#ec4899',
+                            cyan: '#06b6d4',
+                            amber: '#f59e0b'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-15px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-card {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass-nav {
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #818cf8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+
+        /* Floating Ambient Canvas Overlay */
+        #bubbleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Gradient Glow Effects */
+        .glow-accent {
+            box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.4);
+        }
+        .glow-pink {
+            box-shadow: 0 0 25px -5px rgba(236, 72, 153, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#090d16] text-slate-800 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- Background Animated Floating Bubbles Canvas -->
+    <canvas id="bubbleCanvas"></canvas>
+
+    <!-- Toast Notification Overlay Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Main Header / Navigation Bar -->
+    <header class="sticky top-0 z-40 w-full glass-nav border-b border-slate-200 dark:border-slate-800/80 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20 gap-4">
+                
+                <!-- Brand Logo -->
+                <a href="#" onclick="switchTab('home')" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-accent to-brand-cyan flex items-center justify-center text-white shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid font-bold text-lg fa-bolt"></i>
+                    </div>
+                    <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-brand-600 via-brand-accent to-brand-cyan bg-clip-text text-transparent">
+                        AURA<span class="text-slate-700 dark:text-white font-medium text-base ml-1">STORE</span>
+                    </span>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30">Home</button>
+                    <button onclick="switchTab('shop')" id="nav-shop" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all">Shop Products</button>
+                    <button onclick="switchTab('services')" id="nav-services" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all">Services</button>
+                    <button onclick="switchTab('about')" id="nav-about" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all">About Us</button>
+                    <button onclick="switchTab('contact')" id="nav-contact" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all">Contact</button>
+                </nav>
+
+                <!-- Search Bar (Desktop) -->
+                <div class="hidden lg:block relative flex-1 max-w-xs mx-4">
+                    <div class="relative">
+                        <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Search products, gear..." class="w-full pl-10 pr-4 py-2 text-sm rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-slate-800 dark:text-slate-100">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-slate-400 text-sm"></i>
+                    </div>
+                    <!-- Live Search Overlay Droplist -->
+                    <div id="searchResultsDropdown" class="hidden absolute left-0 right-0 top-11 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-80 overflow-y-auto"></div>
+                </div>
+
+                <!-- Action Controls: Theme Switcher & Cart Trigger -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Dark/Light Theme Toggle Button -->
+                    <button id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" class="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all focus:outline-none">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+
+                    <!-- Cart Drawer Trigger Button -->
+                    <button onclick="toggleCartDrawer(true)" class="relative p-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-accent text-white shadow-md shadow-brand-500/20 hover:opacity-95 hover:scale-105 active:scale-95 transition-all">
+                        <i class="fa-solid fa-bag-shopping text-lg"></i>
+                        <span id="cartBadge" class="absolute -top-1.5 -right-1.5 bg-brand-cyan text-slate-950 font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-sm transition-all">0</span>
+                    </button>
+
+                    <!-- Mobile Menu Hamburger Button -->
+                    <button onclick="toggleMobileNav()" class="md:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Navigation -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-3 pb-6 space-y-2">
+            <div class="relative mb-3">
+                <input type="text" id="mobileSearchInput" onkeyup="handleGlobalSearch(event, true)" placeholder="Search products..." class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            </div>
+            <button onclick="switchTab('home'); toggleMobileNav();" class="block w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Home</button>
+            <button onclick="switchTab('shop'); toggleMobileNav();" class="block w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Shop Catalog</button>
+            <button onclick="switchTab('services'); toggleMobileNav();" class="block w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Services</button>
+            <button onclick="switchTab('about'); toggleMobileNav();" class="block w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">About Us</button>
+            <button onclick="switchTab('contact'); toggleMobileNav();" class="block w-full text-left px-4 py-2.5 rounded-xl font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Contact</button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow z-10 relative">
+
+        <!-- ================= HOME SECTION ================= -->
+        <section id="tab-home" class="tab-page py-8 lg:py-12 space-y-16 lg:space-y-24">
+            
+            <!-- Hero Banner -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="relative rounded-3xl overflow-hidden glass-card p-8 sm:p-12 lg:p-16 border border-white/20 dark:border-slate-800 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-12">
+                    <!-- Background ambient glow -->
+                    <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-brand-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <div class="space-y-6 max-w-2xl text-center lg:text-left relative z-10">
+                        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">
+                            <i class="fa-solid fa-sparkles"></i> Next-Gen Electronics & Lifestyle
+                        </span>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                            Elevate Your Lifestyle with <span class="bg-gradient-to-r from-brand-500 via-brand-accent to-brand-cyan bg-clip-text text-transparent">Aura Tech</span>
+                        </h1>
+                        <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Discover cutting-edge gadgets, luxury wearables, and ambient audio gear crafted for maximum performance and minimal aesthetics.
+                        </p>
+                        <div class="flex flex-wrap gap-4 justify-center lg:justify-start pt-2">
+                            <button onclick="switchTab('shop')" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-brand-accent text-white font-semibold shadow-xl shadow-brand-500/25 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+                                <span>Explore Store</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button onclick="switchTab('services')" class="px-8 py-4 rounded-2xl glass-card hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold transition-all">
+                                View Our Services
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hero Visual Banner Image & Floating Badges -->
+                    <div class="relative w-full max-w-md lg:max-w-lg aspect-square flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-brand-500/20 to-brand-accent/20 rounded-full animate-pulse-slow blur-xl"></div>
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80" alt="Premium Headphones" class="relative z-10 rounded-2xl object-cover w-full h-full shadow-2xl transform hover:rotate-1 transition-transform duration-500 border border-white/20">
+                        
+                        <!-- Floating Badge 1 -->
+                        <div class="absolute top-6 -left-4 z-20 glass-card px-4 py-3 rounded-2xl shadow-xl animate-float flex items-center gap-3 border border-white/20">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Rating</p>
+                                <p class="text-sm font-bold">4.9 / 5.0 Rating</p>
+                            </div>
+                        </div>
+
+                        <!-- Floating Badge 2 -->
+                        <div class="absolute -bottom-4 right-4 z-20 glass-card px-4 py-3 rounded-2xl shadow-xl animate-float flex items-center gap-3 border border-white/20" style="animation-delay: 2s;">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Fast Shipping</p>
+                                <p class="text-sm font-bold">Free Worldwide</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Categories Grid -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Explore Categories</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Carefully curated gear for work, play, and sound</p>
+                    </div>
+                    <button onclick="switchTab('shop')" class="text-brand-600 dark:text-brand-400 font-semibold hover:underline flex items-center gap-2 text-sm">
+                        View All Categories <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    <div onclick="filterCategoryAndSwitch('Audio')" class="glass-card p-6 rounded-2xl cursor-pointer hover:scale-105 transition-all text-center group border border-slate-200 dark:border-slate-800">
+                        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-brand-500/10 text-brand-500 flex items-center justify-center text-2xl group-hover:bg-brand-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-headphones"></i>
+                        </div>
+                        <h3 class="font-bold text-base">Audio & Sound</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Headphones & Speakers</p>
+                    </div>
+
+                    <div onclick="filterCategoryAndSwitch('Wearables')" class="glass-card p-6 rounded-2xl cursor-pointer hover:scale-105 transition-all text-center group border border-slate-200 dark:border-slate-800">
+                        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-brand-accent/10 text-brand-accent flex items-center justify-center text-2xl group-hover:bg-brand-accent group-hover:text-white transition-all">
+                            <i class="fa-solid fa-stopwatch"></i>
+                        </div>
+                        <h3 class="font-bold text-base">Wearables</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Smartwatches & Bands</p>
+                    </div>
+
+                    <div onclick="filterCategoryAndSwitch('Accessories')" class="glass-card p-6 rounded-2xl cursor-pointer hover:scale-105 transition-all text-center group border border-slate-200 dark:border-slate-800">
+                        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center text-2xl group-hover:bg-brand-cyan group-hover:text-white transition-all">
+                            <i class="fa-solid fa-keyboard"></i>
+                        </div>
+                        <h3 class="font-bold text-base">Desk Gear</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Keyboards & Accessories</p>
+                    </div>
+
+                    <div onclick="filterCategoryAndSwitch('Gadgets')" class="glass-card p-6 rounded-2xl cursor-pointer hover:scale-105 transition-all text-center group border border-slate-200 dark:border-slate-800">
+                        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl group-hover:bg-amber-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </div>
+                        <h3 class="font-bold text-base">Smart Gadgets</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Home & Portable</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Products Grid (Home View) -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Trending Items</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Top-rated picks by our global community</p>
+                    </div>
+                </div>
+                <div id="homeTrendingContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+
+            <!-- Promotional Banner with Live Countdown Timer -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-brand-700 via-indigo-900 to-slate-900 p-8 sm:p-12 text-white shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 border border-white/10">
+                    <div class="space-y-4 max-w-xl text-center md:text-left">
+                        <span class="inline-block px-3 py-1 rounded-full bg-brand-accent text-white text-xs font-bold uppercase tracking-wider">Limited Time Deal</span>
+                        <h3 class="text-3xl sm:text-4xl font-extrabold">Special Seasonal Flash Sale</h3>
+                        <p class="text-slate-300 text-sm sm:text-base">Get up to <span class="text-amber-400 font-bold">40% OFF</span> on selected wireless audio gear and smart wearables. Don't miss out!</p>
+                        
+                        <!-- Countdown Widget -->
+                        <div class="flex items-center justify-center md:justify-start gap-4 pt-2">
+                            <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl text-center min-w-[60px]">
+                                <span id="cd-hours" class="block text-2xl font-extrabold text-brand-cyan">08</span>
+                                <span class="text-[10px] uppercase text-slate-300 tracking-wider">Hours</span>
+                            </div>
+                            <span class="text-xl font-bold text-white/50">:</span>
+                            <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl text-center min-w-[60px]">
+                                <span id="cd-minutes" class="block text-2xl font-extrabold text-brand-cyan">42</span>
+                                <span class="text-[10px] uppercase text-slate-300 tracking-wider">Mins</span>
+                            </div>
+                            <span class="text-xl font-bold text-white/50">:</span>
+                            <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl text-center min-w-[60px]">
+                                <span id="cd-seconds" class="block text-2xl font-extrabold text-brand-cyan">19</span>
+                                <span class="text-[10px] uppercase text-slate-300 tracking-wider">Secs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="switchTab('shop')" class="px-8 py-4 rounded-2xl bg-white text-slate-900 font-extrabold hover:bg-slate-100 hover:scale-105 active:scale-95 transition-all shadow-xl whitespace-nowrap">
+                        Claim Discount Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Customer Testimonials Section -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Loved by Tech Enthusiasts</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">See what our customers say about their Aura experience</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800">
+                        <div class="flex text-amber-400 text-sm gap-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 italic">"The Aura ANC Headphones completely blew me away. Build quality is luxury-grade and audio resolution is stunning!"</p>
+                        <div class="flex items-center gap-3 pt-2">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" class="w-10 h-10 rounded-full object-cover" alt="User">
+                            <div>
+                                <h4 class="font-bold text-sm">Elena Rostova</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800">
+                        <div class="flex text-amber-400 text-sm gap-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 italic">"Super fast shipping to Berlin! Packaging was ultra sleek and customer support replied in under 5 minutes."</p>
+                        <div class="flex items-center gap-3 pt-2">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" class="w-10 h-10 rounded-full object-cover" alt="User">
+                            <div>
+                                <h4 class="font-bold text-sm">Marcus Vance</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800">
+                        <div class="flex text-amber-400 text-sm gap-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 italic">"The CyberPulse Mechanical Keyboard is an absolute masterpiece for programming. Clean design and tactile feel!"</p>
+                        <div class="flex items-center gap-3 pt-2">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" class="w-10 h-10 rounded-full object-cover" alt="User">
+                            <div>
+                                <h4 class="font-bold text-sm">Aria Chen</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Software Engineer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= SHOP / CATALOG SECTION ================= -->
+        <section id="tab-shop" class="tab-page hidden py-8 lg:py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                
+                <!-- Shop Section Header -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+                    <div>
+                        <h1 class="text-3xl font-extrabold tracking-tight">Explore Full Catalog</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Filter, sort, and find your perfect setup gear</p>
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div id="categoryPills" class="flex flex-wrap gap-2">
+                        <button onclick="setCategoryFilter('All')" class="cat-pill active px-4 py-2 rounded-xl text-xs font-semibold bg-brand-600 text-white transition-all">All</button>
+                        <button onclick="setCategoryFilter('Audio')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-brand-500 hover:text-white transition-all">Audio</button>
+                        <button onclick="setCategoryFilter('Wearables')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-brand-500 hover:text-white transition-all">Wearables</button>
+                        <button onclick="setCategoryFilter('Accessories')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-brand-500 hover:text-white transition-all">Desk Gear</button>
+                        <button onclick="setCategoryFilter('Gadgets')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-brand-500 hover:text-white transition-all">Smart Gadgets</button>
+                    </div>
+                </div>
+
+                <!-- Catalog Filtering Controls Bar -->
+                <div class="glass-card p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 border border-slate-200 dark:border-slate-800">
+                    <!-- Text Search inside Catalog -->
+                    <div class="relative w-full md:w-72">
+                        <input type="text" id="shopSearchInput" onkeyup="filterProducts()" placeholder="Filter by product title..." class="w-full pl-9 pr-4 py-2 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                    </div>
+
+                    <!-- Price Slider -->
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <span class="text-xs font-medium text-slate-500">Max Price:</span>
+                        <input type="range" id="priceRange" min="50" max="600" value="600" oninput="updatePriceLabel(this.value)" class="w-32 accent-brand-500 cursor-pointer">
+                        <span id="priceValueLabel" class="text-sm font-bold text-brand-600 dark:text-brand-400 min-w-[50px]">$600</span>
+                    </div>
+
+                    <!-- Sorting Dropdown -->
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <label class="text-xs font-medium text-slate-500">Sort By:</label>
+                        <select id="sortSelect" onchange="filterProducts()" class="px-3 py-2 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="featured">Featured</option>
+                            <option value="low-high">Price: Low to High</option>
+                            <option value="high-low">Price: High to Low</option>
+                            <option value="rating">Highest Rated</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Product Catalog Grid -->
+                <div id="shopProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+
+                <!-- Empty State Message -->
+                <div id="noResultsState" class="hidden text-center py-16 space-y-4">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-2xl text-slate-400">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">No Products Found</h3>
+                    <p class="text-sm text-slate-500">Try adjusting your search terms or filter constraints.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SERVICES SECTION ================= -->
+        <section id="tab-services" class="tab-page hidden py-8 lg:py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                <div class="text-center max-w-2xl mx-auto">
+                    <span class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest">Premium Support</span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold mt-1">Services & Guarantees</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">We go above and beyond simple delivery to ensure complete peace of mind.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Service 1 -->
+                    <div class="glass-card p-8 rounded-3xl space-y-4 border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-brand-500/10 text-brand-500 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-plane-departure"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Global Express Shipping</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Fully tracked global air freight with express duty clearance. Delivered to your doorstep within 3-5 business days.</p>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="glass-card p-8 rounded-3xl space-y-4 border border-slate-200 dark:border-slate-800 hover:border-brand-accent transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-brand-accent/10 text-brand-accent flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">2-Year Aura Care Warranty</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Every hardware purchase comes automatically protected with our 2-year full coverage, direct-replacement guarantee.</p>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div class="glass-card p-8 rounded-3xl space-y-4 border border-slate-200 dark:border-slate-800 hover:border-brand-cyan transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">24/7 Expert Concierge</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Need setup assistance or compatibility advice? Our dedicated tech concierge team is live around the clock.</p>
+                    </div>
+
+                    <!-- Service 4 -->
+                    <div class="glass-card p-8 rounded-3xl space-y-4 border border-slate-200 dark:border-slate-800 hover:border-amber-500 transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-arrow-rotate-left"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">30-Day Hassle-Free Returns</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Try our hardware in your own workspace. If it doesn't match your workflow, return it for a 100% full refund.</p>
+                    </div>
+
+                    <!-- Service 5 -->
+                    <div class="glass-card p-8 rounded-3xl space-y-4 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Custom Build Engraving</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Make it uniquely yours. Personalize select aluminum casings with laser engraving before dispatch.</p>
+                    </div>
+
+                    <!-- Service 6 -->
+                    <div class="glass-card p-8 rounded-3xl space-y-4 border border-slate-200 dark:border-slate-800 hover:border-purple-500 transition-all">
+                        <div class="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Flexible Installments</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">Split your payments effortlessly with 0% APR installment options available at checkout.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABOUT US SECTION ================= -->
+        <section id="tab-about" class="tab-page hidden py-8 lg:py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+                <!-- Brand Story Banner -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6">
+                        <span class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest">Our Vision & Origin</span>
+                        <h1 class="text-3xl sm:text-5xl font-extrabold leading-tight">Designing Hardware for the Modern Creative</h1>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">Founded in 2022, Aura Store began with a simple quest: eliminate clutter and create premium gear that seamlessly merges function with high aesthetic design.</p>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">Every item in our collection undergoes rigorous quality inspection and ergonomic testing before hitting our digital shelves.</p>
+                    </div>
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" class="rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800" alt="Team Workshop">
+                    </div>
+                </div>
+
+                <!-- Stats Counters -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="glass-card p-6 rounded-2xl text-center border border-slate-200 dark:border-slate-800">
+                        <p class="text-3xl sm:text-4xl font-extrabold text-brand-600 dark:text-brand-400">120K+</p>
+                        <p class="text-xs text-slate-500 mt-1 uppercase font-semibold tracking-wider">Happy Customers</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl text-center border border-slate-200 dark:border-slate-800">
+                        <p class="text-3xl sm:text-4xl font-extrabold text-brand-accent">45+</p>
+                        <p class="text-xs text-slate-500 mt-1 uppercase font-semibold tracking-wider">Countries Served</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl text-center border border-slate-200 dark:border-slate-800">
+                        <p class="text-3xl sm:text-4xl font-extrabold text-brand-cyan">99.8%</p>
+                        <p class="text-xs text-slate-500 mt-1 uppercase font-semibold tracking-wider">Satisfaction Rate</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl text-center border border-slate-200 dark:border-slate-800">
+                        <p class="text-3xl sm:text-4xl font-extrabold text-amber-500">15+</p>
+                        <p class="text-xs text-slate-500 mt-1 uppercase font-semibold tracking-wider">Design Awards</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CONTACT SECTION ================= -->
+        <section id="tab-contact" class="tab-page hidden py-8 lg:py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold">Get In Touch</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Have questions about an order or product? Drop us a line below.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    <!-- Contact Information -->
+                    <div class="lg:col-span-5 space-y-6">
+                        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm">Flagship Store & HQ</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">742 Tech Innovation Way, Suite 400<br>San Francisco, CA 94107</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-brand-accent/10 text-brand-accent flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm">Email Support</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">support@aurastore.com<br>sales@aurastore.com</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-sm">Direct Phone</h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">+1 (800) 555-AURA (2872)<br>Mon - Fri: 9am - 6pm PST</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Form -->
+                    <div class="lg:col-span-7">
+                        <form onsubmit="handleContactSubmit(event)" class="glass-card p-8 rounded-3xl space-y-6 border border-slate-200 dark:border-slate-800">
+                            <h3 class="text-xl font-bold">Send Message</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold mb-2">Full Name</label>
+                                    <input type="text" required placeholder="Alex Morgan" class="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold mb-2">Email Address</label>
+                                    <input type="email" required placeholder="alex@example.com" class="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-2">Subject</label>
+                                <input type="text" required placeholder="Order inquiry or general question" class="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-2">Message</label>
+                                <textarea rows="4" required placeholder="How can we help you today?" class="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-600 to-brand-accent text-white font-bold shadow-lg shadow-brand-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Accordion FAQ -->
+                <div class="max-w-3xl mx-auto pt-8 space-y-4">
+                    <h3 class="text-2xl font-bold text-center mb-6">Frequently Asked Questions</h3>
+                    <div class="glass-card rounded-2xl p-4 border border-slate-200 dark:border-slate-800 cursor-pointer" onclick="toggleFaq(this)">
+                        <div class="flex justify-between items-center font-semibold text-sm">
+                            <span>How long does international delivery take?</span>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+                        </div>
+                        <p class="hidden text-xs text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">Express international shipping usually arrives in 3-5 business days depending on customs processing in your destination region.</p>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-4 border border-slate-200 dark:border-slate-800 cursor-pointer" onclick="toggleFaq(this)">
+                        <div class="flex justify-between items-center font-semibold text-sm">
+                            <span>What is your return policy?</span>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+                        </div>
+                        <p class="hidden text-xs text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">We provide a 30-day money-back guarantee. If you're unsatisfied, return the product in its original packaging for a full refund.</p>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-4 border border-slate-200 dark:border-slate-800 cursor-pointer" onclick="toggleFaq(this)">
+                        <div class="flex justify-between items-center font-semibold text-sm">
+                            <span>Do products include manufacturer warranty?</span>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform"></i>
+                        </div>
+                        <p class="hidden text-xs text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">Yes! All items sold come standard with our 2-Year Aura Care warranty covering manufacturing hardware flaws.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= SLIDE-OUT SHOPPING CART DRAWER ================= -->
+    <div id="cartBackdrop" onclick="toggleCartDrawer(false)" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 transition-opacity"></div>
+    <div id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200 dark:border-slate-800">
+        <!-- Cart Header -->
+        <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-brand-600 dark:text-brand-400"></i>
+                <h3 class="font-bold text-lg">Your Cart</h3>
+                <span id="cartDrawerCount" class="text-xs bg-brand-500/10 text-brand-600 dark:text-brand-400 px-2 py-0.5 rounded-full font-bold">0 Items</span>
+            </div>
+            <button onclick="toggleCartDrawer(false)" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white transition-all">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cartItemsList" class="flex-grow overflow-y-auto p-5 space-y-4"></div>
+
+        <!-- Cart Footer / Calculation & Checkout -->
+        <div class="p-5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-3">
+            <div class="space-y-1.5 text-sm">
+                <div class="flex justify-between text-slate-500">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal" class="font-semibold text-slate-800 dark:text-slate-200">$0.00</span>
+                </div>
+                <div class="flex justify-between text-slate-500">
+                    <span>Shipping</span>
+                    <span class="text-emerald-500 font-semibold">FREE</span>
+                </div>
+                <div class="flex justify-between text-slate-500">
+                    <span>Estimated Tax (8%)</span>
+                    <span id="cartTax" class="font-semibold text-slate-800 dark:text-slate-200">$0.00</span>
+                </div>
+                <div class="flex justify-between text-base font-extrabold pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <span>Total Amount</span>
+                    <span id="cartTotal" class="text-brand-600 dark:text-brand-400">$0.00</span>
+                </div>
+            </div>
+
+            <button onclick="openCheckoutModal()" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-600 to-brand-accent text-white font-bold shadow-lg shadow-brand-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                <span>Proceed to Checkout</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= QUICK VIEW PRODUCT MODAL ================= -->
+    <div id="quickViewModal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card max-w-3xl w-full rounded-3xl overflow-hidden border border-white/20 shadow-2xl relative animate-scaleUp">
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-slate-200/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:scale-110 transition-transform">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="quickViewContent" class="grid grid-cols-1 md:grid-cols-2 p-6 sm:p-8 gap-8"></div>
+        </div>
+    </div>
+
+    <!-- ================= SIMULATED CHECKOUT MODAL ================= -->
+    <div id="checkoutModal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-6 border border-white/20 shadow-2xl relative">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 mx-auto rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-extrabold">Secure Checkout</h3>
+                <p class="text-xs text-slate-500">Simulated Express Checkout</p>
+            </div>
+
+            <form onsubmit="handleCheckoutSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Full Name</label>
+                    <input type="text" required placeholder="John Doe" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Shipping Address</label>
+                    <input type="text" required placeholder="123 Main St, Apt 4B" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Card Number (Simulated)</label>
+                    <input type="text" required placeholder="4242 •••• •••• 4242" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Expiry</label>
+                        <input type="text" required placeholder="12/28" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">CVC</label>
+                        <input type="text" required placeholder="123" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold shadow-lg hover:scale-[1.01] transition-all">
+                    Pay Now (<span id="checkoutPayAmount">$0.00</span>)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="glass-card border-t border-slate-200 dark:border-slate-800 mt-20 z-10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand Info -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-brand-accent flex items-center justify-center text-white font-bold text-sm">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <span class="text-lg font-extrabold tracking-tight">AURA STORE</span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Redefining modern audio, desktop minimalism, and wearable technology with timeless elegance.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-bold text-sm mb-3">Navigation</h4>
+                    <ul class="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                        <li><a href="#" onclick="switchTab('home')" class="hover:text-brand-500 transition-colors">Home Overview</a></li>
+                        <li><a href="#" onclick="switchTab('shop')" class="hover:text-brand-500 transition-colors">Shop All Products</a></li>
+                        <li><a href="#" onclick="switchTab('services')" class="hover:text-brand-500 transition-colors">Guarantees & Services</a></li>
+                        <li><a href="#" onclick="switchTab('about')" class="hover:text-brand-500 transition-colors">Our Vision</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Care -->
+                <div>
+                    <h4 class="font-bold text-sm mb-3">Customer Support</h4>
+                    <ul class="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                        <li><a href="#" onclick="switchTab('contact')" class="hover:text-brand-500 transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition-colors">Shipping Calculator</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition-colors">Track Order Status</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition-colors">Privacy & Terms</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Links -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-sm">Connect With Us</h4>
+                    <div class="flex gap-3 text-slate-500 dark:text-slate-400">
+                        <a href="#" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center hover:text-brand-500 hover:scale-110 transition-all"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center hover:text-brand-500 hover:scale-110 transition-all"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center hover:text-brand-500 hover:scale-110 transition-all"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-xl glass-card flex items-center justify-center hover:text-brand-500 hover:scale-110 transition-all"><i class="fa-brands fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 dark:border-slate-800/60 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                <p>&copy; 2026 Aura Store Inc. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <span>Privacy Policy</span>
+                    <span>Terms of Service</span>
+                    <span>Security</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* ==========================================================================
+           1. PRODUCT DATASET
+           ========================================================================== */
+        const PRODUCTS = [
+            {
+                id: 'prod-1',
+                name: 'Aura Spatial Headphones Max',
+                category: 'Audio',
+                price: 299,
+                rating: 4.9,
+                reviews: 128,
+                badge: 'Best Seller',
+                image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80',
+                description: 'Active Noise Cancellation headphones engineered with custom titanium acoustic drivers, spatial tracking audio, and 40 hours battery life.'
+            },
+            {
+                id: 'prod-2',
+                name: 'CyberPulse Pro Wireless Mouse',
+                category: 'Accessories',
+                price: 89,
+                rating: 4.8,
+                reviews: 94,
+                badge: 'Hot',
+                image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=600&q=80',
+                description: 'Ultra-lightweight ergonomic wireless mouse featuring 26k DPI optical sensor and magnetic quick-charging desk dock.'
+            },
+            {
+                id: 'prod-3',
+                name: 'Aura Horizon Smart Watch Ultra',
+                category: 'Wearables',
+                price: 349,
+                rating: 4.9,
+                reviews: 210,
+                badge: 'Trending',
+                image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80',
+                description: 'Aerospace-grade titanium casing with sapphire glass, dual-frequency GPS, heart-rate ECG tracking, and 7-day battery endurance.'
+            },
+            {
+                id: 'prod-4',
+                name: 'Studio Master Mechanical Keyboard',
+                category: 'Accessories',
+                price: 159,
+                rating: 4.7,
+                reviews: 76,
+                badge: 'New',
+                image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=600&q=80',
+                description: 'Gasket-mounted hot-swappable mechanical keyboard with lubricated switches, solid aluminum frame, and customizable RGB aura lights.'
+            },
+            {
+                id: 'prod-5',
+                name: 'Aura SoundTube RGB Speaker',
+                category: 'Audio',
+                price: 119,
+                rating: 4.6,
+                reviews: 52,
+                badge: '',
+                image: 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=600&q=80',
+                description: '360-degree room-filling immersive sound with reactive ambient lighting rings and IPX7 waterproof rating.'
+            },
+            {
+                id: 'prod-6',
+                name: 'Lumina Smart Desk Ambient Light',
+                category: 'Gadgets',
+                price: 79,
+                rating: 4.8,
+                reviews: 88,
+                badge: '',
+                image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80',
+                description: 'App-controlled LED desk lamp with adaptive room sync, temperature dimming, and built-in 15W Qi wireless charger.'
+            },
+            {
+                id: 'prod-7',
+                name: 'Aura Pods Pro Noise-Canceling',
+                category: 'Audio',
+                price: 179,
+                rating: 4.9,
+                reviews: 340,
+                badge: 'Top Pick',
+                image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80',
+                description: 'Ergonomic true-wireless earbuds featuring transparency mode, spatial audio, and wireless charging case.'
+            },
+            {
+                id: 'prod-8',
+                name: 'Aura PowerBank MagSafe 20000',
+                category: 'Gadgets',
+                price: 69,
+                rating: 4.7,
+                reviews: 115,
+                badge: '',
+                image: 'https://images.unsplash.com/photo-1609592424109-dd9892f1b177?auto=format&fit=crop&w=600&q=80',
+                description: 'Ultra-fast magnetic 20,000mAh power bank capable of charging laptops, phones, and wearables simultaneously.'
+            }
+        ];
+
+        /* ==========================================================================
+           2. GLOBAL STATE
+           ========================================================================== */
+        let cart = [];
+        let currentCategory = 'All';
+        let isDarkMode = true;
+
+        /* ==========================================================================
+           3. FLOATING AMBIENT BUBBLE CANVAS ANIMATION
+           ========================================================================== */
+        const canvas = document.getElementById('bubbleCanvas');
+        const ctx = canvas.getContext('2d');
+        let bubbles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Bubble {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.radius = Math.random() * 18 + 6;
+                this.speed = Math.random() * 0.8 + 0.3;
+                this.dx = (Math.random() - 0.5) * 0.4;
+                this.alpha = Math.random() * 0.35 + 0.1;
+                // Vibrant color choices
+                const colors = ['#6366f1', '#ec4899', '#06b6d4', '#f59e0b', '#8b5cf6'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.y -= this.speed;
+                this.x += this.dx;
+
+                if (this.y < -this.radius || this.x < -this.radius || this.x > canvas.width + this.radius) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.alpha;
+                ctx.fill();
+
+                // Inner glow highlight
+                ctx.beginPath();
+                ctx.arc(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.3, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.globalAlpha = this.alpha * 0.8;
+                ctx.fill();
+
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        function initBubbles() {
+            resizeCanvas();
+            bubbles = [];
+            const bubbleCount = Math.floor(window.innerWidth / 30);
+            for (let i = 0; i < bubbleCount; i++) {
+                bubbles.push(new Bubble());
+            }
+        }
+
+        function animateBubbles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            bubbles.forEach(bubble => {
+                bubble.update();
+                bubble.draw();
+            });
+            requestAnimationFrame(animateBubbles);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        /* ==========================================================================
+           4. NAVIGATION & SPA TAB SWITCHING
+           ========================================================================== */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-page').forEach(page => page.classList.add('hidden'));
+            const targetPage = document.getElementById(`tab-${tabId}`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // Update Header nav styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = 'nav-btn px-4 py-2 rounded-xl text-sm font-medium hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all';
+            });
+            const activeNavBtn = document.getElementById(`nav-${tabId}`);
+            if (activeNavBtn) {
+                activeNavBtn.className = 'nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30';
+            }
+        }
+
+        function toggleMobileNav() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function filterCategoryAndSwitch(category) {
+            setCategoryFilter(category);
+            switchTab('shop');
+        }
+
+        /* ==========================================================================
+           5. THEME SWITCHER (DARK / LIGHT MODE)
+           ========================================================================== */
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+
+            if (isDarkMode) {
+                html.classList.add('dark');
+                themeIcon.className = 'fa-solid fa-moon text-lg';
+            } else {
+                html.classList.remove('dark');
+                themeIcon.className = 'fa-solid fa-sun text-lg text-amber-500';
+            }
+        }
+
+        /* ==========================================================================
+           6. PRODUCT RENDERING & FILTERING
+           ========================================================================== */
+        function createProductCard(prod) {
+            return `
+                <div class="glass-card rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-brand-500/50 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+                    <div class="relative overflow-hidden aspect-square bg-slate-100 dark:bg-slate-800">
+                        <img src="${prod.image}" alt="${prod.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        ${prod.badge ? `<span class="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-brand-500 text-white shadow-md">${prod.badge}</span>` : ''}
+                        
+                        <!-- Quick View Overlay Action -->
+                        <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <button onclick="openQuickView('${prod.id}')" class="p-3 rounded-xl bg-white text-slate-900 font-bold hover:scale-110 transition-transform shadow-lg" title="Quick View">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-5 flex flex-col flex-grow justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                                <span>${prod.category}</span>
+                                <span class="text-amber-400 flex items-center gap-1 font-semibold">
+                                    <i class="fa-solid fa-star"></i> ${prod.rating} (${prod.reviews})
+                                </span>
+                            </div>
+                            <h3 class="font-bold text-base line-clamp-1 group-hover:text-brand-500 transition-colors">${prod.name}</h3>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800/60">
+                            <div>
+                                <span class="text-xs text-slate-400 block">Price</span>
+                                <span class="text-lg font-extrabold text-brand-600 dark:text-brand-400">$${prod.price}</span>
+                            </div>
+                            <button onclick="addToCart('${prod.id}')" class="px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProducts() {
+            // Render Home Trending Container (First 4)
+            const homeTrendingContainer = document.getElementById('homeTrendingContainer');
+            if (homeTrendingContainer) {
+                homeTrendingContainer.innerHTML = PRODUCTS.slice(0, 4).map(createProductCard).join('');
+            }
+
+            // Render Catalog Grid
+            filterProducts();
+        }
+
+        function setCategoryFilter(category) {
+            currentCategory = category;
+            
+            // Update Category Pill buttons UI
+            document.querySelectorAll('.cat-pill').forEach(pill => {
+                if (pill.innerText.trim().toLowerCase() === category.toLowerCase() || (category === 'Desk Gear' && pill.innerText.includes('Desk'))) {
+                    pill.className = 'cat-pill active px-4 py-2 rounded-xl text-xs font-semibold bg-brand-600 text-white transition-all';
+                } else {
+                    pill.className = 'cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-brand-500 hover:text-white transition-all';
+                }
+            });
+
+            filterProducts();
+        }
+
+        function updatePriceLabel(val) {
+            document.getElementById('priceValueLabel').innerText = `$${val}`;
+            filterProducts();
+        }
+
+        function filterProducts() {
+            const shopGrid = document.getElementById('shopProductsGrid');
+            if (!shopGrid) return;
+
+            const searchVal = (document.getElementById('shopSearchInput')?.value || '').toLowerCase();
+            const maxPrice = parseFloat(document.getElementById('priceRange')?.value || 600);
+            const sortVal = document.getElementById('sortSelect')?.value || 'featured';
+
+            let filtered = PRODUCTS.filter(prod => {
+                const matchesCategory = currentCategory === 'All' || prod.category.toLowerCase() === currentCategory.toLowerCase();
+                const matchesSearch = prod.name.toLowerCase().includes(searchVal) || prod.description.toLowerCase().includes(searchVal);
+                const matchesPrice = prod.price <= maxPrice;
+                return matchesCategory && matchesSearch && matchesPrice;
+            });
+
+            // Sorting
+            if (sortVal === 'low-high') filtered.sort((a, b) => a.price - b.price);
+            if (sortVal === 'high-low') filtered.sort((a, b) => b.price - a.price);
+            if (sortVal === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+
+            if (filtered.length === 0) {
+                shopGrid.innerHTML = '';
+                document.getElementById('noResultsState').classList.remove('hidden');
+            } else {
+                document.getElementById('noResultsState').classList.add('hidden');
+                shopGrid.innerHTML = filtered.map(createProductCard).join('');
+            }
+        }
+
+        /* ==========================================================================
+           7. LIVE SEARCH OVERLAY DROPDOWN
+           ========================================================================== */
+        function handleGlobalSearch(event, isMobile = false) {
+            const query = event.target.value.toLowerCase().trim();
+            const dropdown = document.getElementById('searchResultsDropdown');
+
+            if (!query) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            const matches = PRODUCTS.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+
+            if (matches.length > 0) {
+                dropdown.innerHTML = matches.map(prod => `
+                    <div onclick="openQuickView('${prod.id}'); document.getElementById('searchResultsDropdown').classList.add('hidden');" class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer flex items-center gap-3 border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+                        <img src="${prod.image}" class="w-10 h-10 rounded-lg object-cover">
+                        <div class="flex-grow">
+                            <h4 class="text-xs font-bold">${prod.name}</h4>
+                            <p class="text-[10px] text-slate-400">$${prod.price} • ${prod.category}</p>
+                        </div>
+                    </div>
+                `).join('');
+                dropdown.classList.remove('hidden');
+            } else {
+                dropdown.innerHTML = `<div class="p-4 text-xs text-slate-400 text-center">No matching products found</div>`;
+                dropdown.classList.remove('hidden');
+            }
+        }
+
+        /* ==========================================================================
+           8. SHOPPING CART LOGIC & DRAWER
+           ========================================================================== */
+        function toggleCartDrawer(open) {
+            const backdrop = document.getElementById('cartBackdrop');
+            const drawer = document.getElementById('cartDrawer');
+
+            if (open) {
+                backdrop.classList.remove('hidden');
+                drawer.classList.remove('translate-x-full');
+            } else {
+                backdrop.classList.add('hidden');
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        function addToCart(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingIndex = cart.findIndex(item => item.id === productId);
+            if (existingIndex > -1) {
+                cart[existingIndex].qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+
+            updateCartUI();
+            showToast(`Added "${product.name}" to your cart!`);
+        }
+
+        function updateCartQty(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+
+            item.qty += delta;
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+            updateCartUI();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            updateCartUI();
+            showToast('Item removed from cart.');
+        }
+
+        function updateCartUI() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartBadge').innerText = totalItems;
+            document.getElementById('cartDrawerCount').innerText = `${totalItems} Items`;
+
+            const cartList = document.getElementById('cartItemsList');
+            if (cart.length === 0) {
+                cartList.innerHTML = `
+                    <div class="text-center py-12 space-y-3">
+                        <i class="fa-solid fa-basket-shopping text-4xl text-slate-300 dark:text-slate-700"></i>
+                        <p class="text-sm font-semibold text-slate-500">Your shopping cart is empty</p>
+                        <button onclick="toggleCartDrawer(false); switchTab('shop');" class="px-4 py-2 rounded-xl bg-brand-500 text-white text-xs font-bold">Start Shopping</button>
+                    </div>
+                `;
+            } else {
+                cartList.innerHTML = cart.map(item => `
+                    <div class="flex items-center gap-4 p-3 rounded-2xl glass-card border border-slate-200 dark:border-slate-800">
+                        <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover shrink-0">
+                        <div class="flex-grow min-w-0">
+                            <h4 class="font-bold text-xs truncate">${item.name}</h4>
+                            <p class="text-xs text-brand-600 dark:text-brand-400 font-bold mt-1">$${item.price}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <button onclick="updateCartQty('${item.id}', -1)" class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs hover:bg-brand-500 hover:text-white transition-colors">-</button>
+                                <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
+                                <button onclick="updateCartQty('${item.id}', 1)" class="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-xs hover:bg-brand-500 hover:text-white transition-colors">+</button>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart('${item.id}')" class="text-slate-400 hover:text-rose-500 p-2 transition-colors">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            // Price calculations
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+
+            document.getElementById('cartSubtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cartTax').innerText = `$${tax.toFixed(2)}`;
+            document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('checkoutPayAmount').innerText = `$${total.toFixed(2)}`;
+        }
+
+        /* ==========================================================================
+           9. QUICK VIEW MODAL
+           ========================================================================== */
+        function openQuickView(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('quickViewModal');
+            const content = document.getElementById('quickViewContent');
+
+            content.innerHTML = `
+                <div class="aspect-square rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+                    <img src="${product.image}" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col justify-between space-y-4">
+                    <div class="space-y-2">
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-500/10 text-brand-500 uppercase tracking-wider">${product.category}</span>
+                        <h2 class="text-2xl font-extrabold mt-2">${product.name}</h2>
+                        <div class="flex items-center gap-2 text-sm text-amber-400">
+                            <i class="fa-solid fa-star"></i>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">${product.rating}</span>
+                            <span class="text-xs text-slate-400">(${product.reviews} customer reviews)</span>
+                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 pt-2 leading-relaxed">${product.description}</p>
+                    </div>
+
+                    <div class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-extrabold text-brand-600 dark:text-brand-400">$${product.price}</span>
+                            <span class="text-xs text-emerald-500 font-semibold">In Stock & Ready to Ship</span>
+                        </div>
+
+                        <button onclick="addToCart('${product.id}'); closeQuickView();" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-600 to-brand-accent text-white font-bold shadow-lg shadow-brand-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bag-shopping"></i> Add To Cart Now
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeQuickView() {
+            document.getElementById('quickViewModal').classList.add('hidden');
+        }
+
+        /* ==========================================================================
+           10. CHECKOUT MODAL & CONTACT FORM HANDLING
+           ========================================================================== */
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty! Add items before checking out.');
+                return;
+            }
+            toggleCartDrawer(false);
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function handleCheckoutSubmit(e) {
+            e.preventDefault();
+            closeCheckoutModal();
+            cart = [];
+            updateCartUI();
+            showToast('🎉 Order Placed Successfully! Confirmation sent to your email.');
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            e.target.reset();
+            showToast('📩 Message sent! Our team will respond within 24 hours.');
+        }
+
+        function toggleFaq(element) {
+            const answer = element.querySelector('p');
+            const icon = element.querySelector('.fa-chevron-down');
+            answer.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        /* ==========================================================================
+           11. TOAST NOTIFICATIONS
+           ========================================================================== */
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'glass-card px-5 py-3.5 rounded-2xl shadow-2xl border border-brand-500/30 text-sm font-semibold flex items-center gap-3 animate-bounce pointer-events-auto bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-white';
+            toast.innerHTML = `
+                <div class="w-7 h-7 rounded-lg bg-brand-500 text-white flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        /* ==========================================================================
+           12. COUNTDOWN TIMER SIMULATION
+           ========================================================================== */
+        function startCountdown() {
+            let hours = 8, minutes = 42, seconds = 19;
+            setInterval(() => {
+                seconds--;
+                if (seconds < 0) {
+                    seconds = 59;
+                    minutes--;
+                    if (minutes < 0) {
+                        minutes = 59;
+                        hours--;
+                    }
+                }
+                document.getElementById('cd-hours').innerText = hours.toString().padStart(2, '0');
+                document.getElementById('cd-minutes').innerText = minutes.toString().padStart(2, '0');
+                document.getElementById('cd-seconds').innerText = seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+
+        /* ==========================================================================
+           13. INIT ON LOAD
+           ========================================================================== */
+        window.onload = function() {
+            initBubbles();
+            animateBubbles();
+            renderProducts();
+            startCountdown();
+        };
+    </script>
+</body>
+</html>
